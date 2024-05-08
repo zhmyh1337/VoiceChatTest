@@ -7,9 +7,8 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "MyGameInstance.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE(FOnInitialPlayerCreated)
+
 UCLASS()
 class VOICECHATTEST_API UMyGameInstance : public UGameInstance
 {
@@ -23,6 +22,8 @@ protected:
 	IOnlineSessionPtr GetOnlineSession();
 
 public:
+	FOnInitialPlayerCreated OnInitialPlayerCreated;
+
 	IOnlineSessionPtr OnlineSessionCachedPtr;
 
 	UFUNCTION(Exec)
@@ -43,6 +44,8 @@ public:
 	void OnJoinSessionComplete(FName name, EOnJoinSessionCompleteResult::Type type);
 
 	void OnSessionParticipantsChange(FName name, const FUniqueNetId& netid, bool joined);
+
+	virtual ULocalPlayer* CreateInitialPlayer(FString& OutError) override;
 
 	FOnCreateSessionCompleteDelegate OnCreateSessionCompleteDelegate;
 	FOnStartSessionCompleteDelegate OnStartSessionCompleteDelegate;

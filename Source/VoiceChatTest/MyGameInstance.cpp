@@ -157,3 +157,10 @@ void UMyGameInstance::OnSessionParticipantsChange(FName name, const FUniqueNetId
 	UE_LOG(LogOnline, Display, TEXT("OnSessionParticipantsChange name = %s netid = %s joined = %d"), *name.ToString(), *netid.ToString(), joined);
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::White, FString::Printf(TEXT("OnSessionParticipantsChange name = %s netid = %s joined = %d"), *name.ToString(), *netid.ToString(), joined));
 }
+
+ULocalPlayer* UMyGameInstance::CreateInitialPlayer(FString& OutError)
+{
+	ULocalPlayer* Result = Super::CreateInitialPlayer(OutError);
+	OnInitialPlayerCreated.Broadcast();
+	return Result;
+}

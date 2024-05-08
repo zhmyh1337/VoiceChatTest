@@ -3,6 +3,7 @@
 
 #include "VoiceSubsystem.h"
 
+#include "MyGameInstance.h"
 #include "VivoxCore.h"
 
 #define VIVOX_SERVER "https://unity.vivox.com/appconfig/79715-test-99539-udash"
@@ -25,7 +26,27 @@ void UVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		UE_LOG(LogVoiceSubsystem, Error, TEXT("VoiceClient->Initialize() error %d"), Error);
 	}
 
-	AccountId Account(VIVOX_ISSUER, "example_user", VIVOX_DOMAIN);
+	auto GI = Cast<UMyGameInstance>(GetGameInstance());
+	GI->OnInitialPlayerCreated.AddUObject(this, &ThisClass::OnInitialPlayerCreated);
+}
+
+void UVoiceSubsystem::Deinitialize()
+{
+	Super::Deinitialize();
+
+	if (LoginSession)
+	{
+		LoginSession->Logout();
+	}
+	VoiceClient->Uninitialize();
+}
+
+void UVoiceSubsystem::OnInitialPlayerCreated()
+{
+	auto GI = GetGameInstance();
+	auto LocalPlayerUniqueNetId = GI->GetPrimaryPlayerUniqueIdRepl();
+	FString UserName = UniqueNetIdToVivoxUserName(LocalPlayerUniqueNetId);
+	AccountId Account(VIVOX_ISSUER, UserName, VIVOX_DOMAIN);
 	LoginSession = &VoiceClient->GetLoginSession(Account);
 
 	ILoginSession::FOnBeginLoginCompletedDelegate OnBeginLoginCompletedDelegate;
@@ -42,14 +63,6 @@ void UVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	UE_LOG(LogVoiceSubsystem, Log, TEXT("LoginSession->BeginLogin called"));
 }
 
-void UVoiceSubsystem::Deinitialize()
-{
-	Super::Deinitialize();
-
-	LoginSession->Logout();
-	VoiceClient->Uninitialize();
-}
-
 void UVoiceSubsystem::OnBeginLoginCompleted(VivoxCoreError Error)
 {
 	if (Error)
@@ -60,7 +73,7 @@ void UVoiceSubsystem::OnBeginLoginCompleted(VivoxCoreError Error)
 
 	UE_LOG(LogVoiceSubsystem, Log, TEXT("OnBeginLoginCompleted success"));
 
-	ChannelId Channel(VIVOX_ISSUER, "example_channel", VIVOX_DOMAIN, ChannelType::Echo);
+	ChannelId Channel(VIVOX_ISSUER, "example_channel", VIVOX_DOMAIN, ChannelType::NonPositional);
 	IChannelSession* ChannelSession = &LoginSession->GetChannelSession(Channel);
 
 	IChannelSession::FOnBeginConnectCompletedDelegate OnBeginConnectCompletedDelegate;
@@ -91,4 +104,9 @@ void UVoiceSubsystem::OnBeginConnectCompleted(VivoxCoreError Error)
 	}
 
 	UE_LOG(LogVoiceSubsystem, Log, TEXT("OnBeginConnectCompleted success"));
+}
+
+FString UVoiceSubsystem::UniqueNetIdToVivoxUserName(FUniqueNetIdRepl UniqueNetId)
+{
+	return UniqueNetId->ToString();
 }

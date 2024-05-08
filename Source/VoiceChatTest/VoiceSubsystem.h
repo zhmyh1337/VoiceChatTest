@@ -27,11 +27,15 @@ public:
 	virtual void Deinitialize() override;
 
 private:
+	void OnInitialPlayerCreated();
+
 	void OnBeginLoginCompleted(VivoxCoreError Error);
 
 	void OnLoginSessionStateChanged(LoginState State);
 
 	void OnBeginConnectCompleted(VivoxCoreError Error);
+
+	FString UniqueNetIdToVivoxUserName(FUniqueNetIdRepl UniqueNetId);
 
 private:
 	IClient* VoiceClient;
