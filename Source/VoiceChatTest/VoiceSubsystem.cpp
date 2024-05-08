@@ -24,6 +24,11 @@ void UVoiceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	if (VivoxCoreError Error = VoiceClient->Initialize())
 	{
 		UE_LOG(LogVoiceSubsystem, Error, TEXT("VoiceClient->Initialize() error %d"), Error);
+
+		if (Error != VxErrorAlreadyInitialized)
+		{
+			return;
+		}
 	}
 
 	auto GI = Cast<UMyGameInstance>(GetGameInstance());
