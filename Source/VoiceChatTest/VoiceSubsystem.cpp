@@ -51,6 +51,9 @@ void UVoiceSubsystem::OnInitialPlayerCreated()
 	auto GI = GetGameInstance();
 	auto LocalPlayerUniqueNetId = GI->GetPrimaryPlayerUniqueIdRepl();
 	FString UserName = UniqueNetIdToVivoxUserName(LocalPlayerUniqueNetId);
+
+	UE_LOG(LogVoiceSubsystem, Log, TEXT("LoginSession UserName = %s"), *UserName);
+
 	AccountId Account(VIVOX_ISSUER, UserName, VIVOX_DOMAIN);
 	LoginSession = &VoiceClient->GetLoginSession(Account);
 
