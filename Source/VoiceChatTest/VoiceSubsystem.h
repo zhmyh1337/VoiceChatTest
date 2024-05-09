@@ -35,7 +35,7 @@ private:
 
 	void OnBeginConnectCompleted(VivoxCoreError Error);
 
-	FString UniqueNetIdToVivoxUserName(FUniqueNetIdRepl UniqueNetId);
+	FString UniqueNetIdToVivoxUserName(const FUniqueNetIdRepl& UniqueNetId);
 
 private:
 	IClient* VoiceClient;

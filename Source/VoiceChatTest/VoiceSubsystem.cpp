@@ -114,7 +114,7 @@ void UVoiceSubsystem::OnBeginConnectCompleted(VivoxCoreError Error)
 	UE_LOG(LogVoiceSubsystem, Log, TEXT("OnBeginConnectCompleted success"));
 }
 
-FString UVoiceSubsystem::UniqueNetIdToVivoxUserName(FUniqueNetIdRepl UniqueNetId)
+FString UVoiceSubsystem::UniqueNetIdToVivoxUserName(const FUniqueNetIdRepl& UniqueNetId)
 {
 	return UniqueNetId->ToString();
 }
